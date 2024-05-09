@@ -42,18 +42,62 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 
-	router.GET("/create", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "create.tmpl", gin.H{})
-	})
+	createGroup := router.Group("/create")
+	{
+		createGroup.GET("", func(ctx *gin.Context) {
+			ctx.HTML(http.StatusOK, "create.tmpl", gin.H{})
+		})
 
-	router.POST("/create", func(ctx *gin.Context) {
-		var form DishForm
-		if err := ctx.ShouldBindWith(&form, binding.Form); err != nil {
-			ctx.HTML(http.StatusBadRequest, "create.tmpl", gin.H{"error": err.Error()})
-			return
-		}
+		createGroup.POST("", func(ctx *gin.Context) {
+			var form DishForm
+			if err := ctx.ShouldBindWith(&form, binding.Form); err != nil {
+				ctx.HTML(http.StatusBadRequest, "create.tmpl", gin.H{"error": err.Error()})
+				return
+			}
 
-		db.Create(&Dish{Name: form.Name, Description: form.Description, Thumbnail: form.Thumbnail})
+			db.Create(&Dish{Name: form.Name, Description: form.Description, Thumbnail: form.Thumbnail})
+
+			ctx.Redirect(http.StatusFound, "/")
+		})
+	}
+
+	editGroup := router.Group("/edit/:id")
+	{
+		editGroup.GET("", func(ctx *gin.Context) {
+			id := ctx.Param("id")
+
+			var dish Dish
+			db.First(&dish, id)
+
+			dishForm := DishForm{Name: dish.Name, Description: dish.Description, Thumbnail: dish.Thumbnail}
+
+			ctx.HTML(http.StatusOK, "edit.tmpl", gin.H{"form": dishForm})
+		})
+
+		editGroup.POST("", func(ctx *gin.Context) {
+			id := ctx.Param("id")
+
+			var form DishForm
+			if err := ctx.ShouldBindWith(&form, binding.Form); err != nil {
+				ctx.HTML(http.StatusBadRequest, "edit.tmpl", gin.H{"error": err.Error(), "form": form})
+				return
+			}
+
+			var dish Dish
+			db.First(&dish, id)
+
+			db.Model(&dish).Updates(Dish{Name: form.Name, Description: form.Description, Thumbnail: form.Thumbnail})
+
+			ctx.Redirect(http.StatusFound, "/")
+		})
+	}
+
+	router.GET("/delete/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		var dish Dish
+		db.First(&dish, id)
+        db.Delete(&dish)
 
 		ctx.Redirect(http.StatusFound, "/")
 	})

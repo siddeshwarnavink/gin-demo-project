@@ -1,0 +1,31 @@
+{{ if .error }}
+<div class="notification is-danger">{{ .error }}</div>
+{{ end }}
+
+<div class="field">
+  <label class="label">Give it a name</label>
+  <div class="control">
+    <input class="input" type="text" name="name" value="{{ .form.Name }}" placeholder="e.g: Spooky Sambar">
+  </div>
+</div>
+
+<div class="field">
+  <label class="label">Tell a little about it</label>
+  <div class="control">
+    <textarea class="textarea" name="description" placeholder="e.g: A great halloween dish">{{ .form.Description }}</textarea>
+  </div>
+</div>
+
+<div class="field">
+  <label class="label">Image of the Dish</label>
+  <div class="control">
+    <input class="input" type="text" name="thumbnail"  value="{{ .form.Thumbnail }}" >
+  </div>
+</div>
+
+<div class="field is-grouped">
+    <div class="control">
+        <button class="button is-primary">Create</button>
+    </div>
+</div>
+
