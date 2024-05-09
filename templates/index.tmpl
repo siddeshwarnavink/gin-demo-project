@@ -8,7 +8,14 @@
 
 <body>
     <h1>Recipes</h1>
-    <p>Hello {{.Name}}</p>
+    {{ range .Dishes }}
+    <div>
+        <img src="{{ .Thumbnail }}">
+        <h3>{{ .Name }}</h3>
+        {{ .Description }}
+    </div>
+    {{ end }}
+
 </body>
 
 </html>
