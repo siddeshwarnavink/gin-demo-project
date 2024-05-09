@@ -1,6 +1,9 @@
 {{ template "header.tmpl" . }}
 <h1 class="title is-3 my-3">Create your own recipe</h1>
 <form method="POST">
+    {{ if .error }}
+    <div class="notification is-danger">{{ .error }}</div>
+    {{ end }}
     <div class="field">
       <label class="label">Give it a name</label>
       <div class="control">

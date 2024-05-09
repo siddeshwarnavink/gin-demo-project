@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -19,6 +21,14 @@ type Dish struct {
 	UpdatedAt   time.Time
 }
 
+type DishForm struct {
+	Name        string `form:"name" binding:"required"`
+	Description string `form:"description" binding:"required"`
+	Thumbnail   string `form:"thumbnail" binding:"required,url"`
+}
+
+var validate *validator.Validate
+
 func main() {
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
 	if err != nil {
@@ -26,6 +36,8 @@ func main() {
 	}
 
 	db.AutoMigrate(&Dish{})
+
+	validate = validator.New()
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
@@ -35,13 +47,15 @@ func main() {
 	})
 
 	router.POST("/create", func(ctx *gin.Context) {
-		name := ctx.PostForm("name")
-		description := ctx.PostForm("description")
-		thumbnail := ctx.PostForm("thumbnail")
+		var form DishForm
+		if err := ctx.ShouldBindWith(&form, binding.Form); err != nil {
+			ctx.HTML(http.StatusBadRequest, "create.tmpl", gin.H{"error": err.Error()})
+			return
+		}
 
-		db.Create(&Dish{Name: name, Description: description, Thumbnail: thumbnail})
+		db.Create(&Dish{Name: form.Name, Description: form.Description, Thumbnail: form.Thumbnail})
 
-        ctx.Redirect(http.StatusFound, "/")
+		ctx.Redirect(http.StatusFound, "/")
 	})
 
 	router.GET("/", func(ctx *gin.Context) {
