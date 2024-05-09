@@ -30,12 +30,16 @@ func main() {
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*")
 
-	router.GET("/", func(c *gin.Context) {
+	router.GET("/create", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "create.tmpl", gin.H{})
+	})
+
+	router.GET("/", func(ctx *gin.Context) {
 		var dishes []Dish
 		db.Find(&dishes)
 
-		c.HTML(http.StatusOK, "index.tmpl", gin.H{
-            "Dishes": dishes,
+		ctx.HTML(http.StatusOK, "home.tmpl", gin.H{
+			"Dishes": dishes,
 		})
 	})
 
