@@ -1,3 +1,31 @@
 {{ template "header.tmpl" . }}
 <h1 class="title is-3 my-3">Create your own recipe</h1>
+<form method="POST">
+    <div class="field">
+      <label class="label">Give it a name</label>
+      <div class="control">
+        <input class="input" type="text" name="name" placeholder="e.g: Spooky Sambar">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Tell a little about it</label>
+      <div class="control">
+        <textarea class="textarea" name="description" placeholder="e.g: A great halloween dish"></textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label">Image of the Dish</label>
+      <div class="control">
+        <input class="input" type="text" name="thumbnail">
+      </div>
+    </div>
+
+    <div class="field is-grouped">
+        <div class="control">
+            <button class="button is-primary">Create</button>
+        </div>
+    </div>
+</form>
 {{ template "footer.tmpl" . }}

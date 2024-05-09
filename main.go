@@ -34,6 +34,16 @@ func main() {
 		ctx.HTML(http.StatusOK, "create.tmpl", gin.H{})
 	})
 
+	router.POST("/create", func(ctx *gin.Context) {
+		name := ctx.PostForm("name")
+		description := ctx.PostForm("description")
+		thumbnail := ctx.PostForm("thumbnail")
+
+		db.Create(&Dish{Name: name, Description: description, Thumbnail: thumbnail})
+
+        ctx.Redirect(http.StatusFound, "/")
+	})
+
 	router.GET("/", func(ctx *gin.Context) {
 		var dishes []Dish
 		db.Find(&dishes)
