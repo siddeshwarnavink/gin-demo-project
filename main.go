@@ -7,10 +7,15 @@ import (
 )
 
 func main() {
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-        c.Header("Content-Type", "text/html")
-        c.String(http.StatusOK, "<h1>Hello world</h1>")
+	router := gin.Default()
+
+	router.LoadHTMLGlob("templates/*")
+
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"Name": "Siddeshwar",
+		})
 	})
-	r.Run()
+
+	router.Run()
 }
